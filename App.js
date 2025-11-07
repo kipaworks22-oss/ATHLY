@@ -1,4 +1,4 @@
-// App.js (왕초보 시작버전) — 전역 React 사용
+// App.js (연결 버전) — 전역 React 사용
 const { useEffect, useMemo, useState } = React;
 
 const STORAGE_KEY = "athly-beginner-v1";
@@ -62,7 +62,7 @@ function App() {
       React.createElement("div", { className: "flex items-center justify-between" },
         React.createElement("div", null,
           React.createElement("h1", { className: "text-2xl font-bold" }, "ATHLY β"),
-          React.createElement("p", { className: "text-sm text-gray-500" }, "왕초보 시작버전 · Asia/Seoul"),
+          React.createElement("p", { className: "text-sm text-gray-500" }, `연결됨 · ${BACKEND || "데모"}`),
           db.linkedPlayer
             ? React.createElement("p", { className: "text-sm mt-1" }, "연결된 선수: ", React.createElement("b", null, db.linkedPlayer.name), " (", db.linkedPlayer.team, ") · ID: ", db.linkedPlayer.id)
             : React.createElement("p", { className: "text-sm mt-1 text-red-600" }, "아직 KBO 선수 연결이 필요해요.")
@@ -187,10 +187,6 @@ function KboLink({ db, setDb }) {
         React.createElement(PillButton, { onClick: () => link(p) }, "선택")
       )),
       !loading && results.length === 0 && React.createElement("p", { className: "text-sm text-gray-500" }, "검색 결과가 여기에 표시됩니다.")
-    ),
-    React.createElement("hr", { className: "my-6" }),
-    React.createElement("p", { className: "text-xs text-gray-500" },
-      "지금은 데모 모드입니다. 나중에 백엔드 주소를 넣으면 실제 연동으로 바뀝니다."
     )
   );
 }
