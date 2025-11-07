@@ -3,10 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>김성민 전용 베타</title>
-    <!-- Tailwind (CDN) -->
+    <title>ATHLY – KBO 연동 베타</title>
+    <meta name="description" content="ATHLY | KBO 선수 선택 후 자동 연동되는 자기관리 앱 (베타)" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React 18 (CDN) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   </head>
@@ -14,8 +13,10 @@
     <div id="root"></div>
     <script type="module">
       import App from "./App.js";
+      import { BACKEND_BASE } from "./config.js";
       import { createElement as h } from "https://esm.sh/react@18";
       import { createRoot } from "https://esm.sh/react-dom@18/client";
+      window.ATHLY_CONFIG = { BACKEND_BASE };
       const root = createRoot(document.getElementById("root"));
       root.render(h(App));
     </script>
