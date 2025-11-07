@@ -1,21 +1,94 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>ATHLY – 시작버전 (연결됨)</title>
-    <meta name="description" content="ATHLY | KBO 선수 선택(실제 워커 연결) + 불펜/운동/경기 기록" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  </head>
-  <body class="bg-gray-50">
-    <div id="root"></div>
-    <script type="module">
-      import App from "./App.js";
-      window.ATHLY_CONFIG = { BACKEND_BASE: "https://athly.kipaworks22.workers.dev" };
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(React.createElement(App));
-    </script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATHLY β | KBO 선수 연동</title>
+
+  <!-- Tailwind (CDN — 개발용) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { background:#f9f9f9; color:#111; }
+    .card { background:white; border-radius:1rem; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .btn { background:black; color:white; border-radius:9999px; padding:0.5rem 1rem; }
+    .btn:hover { opacity:0.8; }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center py-10">
+  <main class="w-full max-w-xl">
+
+    <h1 class="text-3xl font-bold mb-2">ATHLY β</h1>
+    <p class="text-gray-500 mb-6">연결됨 · 실제 KBO 선수 연동</p>
+
+    <div class="flex gap-2 mb-6">
+      <button class="btn">홈</button>
+      <button class="btn">경기기록</button>
+      <button class="btn">불펜</button>
+      <button class="btn">운동</button>
+      <button class="btn">리포트</button>
+      <button class="btn bg-black text-white">KBO연동</button>
+    </div>
+
+    <section class="card">
+      <h2 class="text-xl font-semibold mb-2">KBO 선수 연결</h2>
+      <p class="text-gray-500 mb-4">선수 이름으로 검색하고 선택하면 연결됩니다.</p>
+
+      <div class="flex gap-2 mb-3">
+        <input type="text" id="playerName" class="flex-1 border rounded-full px-4 py-2" placeholder="예: 박주성, 김성민 등" />
+        <button id="searchBtn" class="btn">검색</button>
+      </div>
+
+      <div id="results" class="text-sm text-gray-700">
+        <em>검색 결과가 여기에 표시됩니다.</em>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 🌐 백엔드 주소 (Cloudflare Workers)
+    window.ATHLY_CONFIG = {
+      BACKEND_BASE: "https://athly.kipaworks22.workers.dev"
+    };
+
+    // ⚙️ 검색 기능
+    (function () {
+      const base = window.ATHLY_CONFIG.BACKEND_BASE;
+      const input = document.getElementById('playerName');
+      const btn = document.getElementById('searchBtn');
+      const box = document.getElementById('results');
+
+      async function render(q) {
+        const name = (q ?? input.value ?? '').trim();
+        const url = `${base}/kbo/search${name ? `?name=${encodeURIComponent(name)}` : ''}`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+
+          if (data.players && data.players.length > 0) {
+            box.innerHTML = data.players.map(p => `
+              <div class="p-3 border border-gray-200 rounded-lg mb-2">
+                <b>${p.name}</b> <span class="text-gray-500">(${p.position})</span><br/>
+                <span class="text-gray-400 text-sm">${p.team} · ID: ${p.id}</span>
+              </div>
+            `).join('');
+          } else {
+            box.innerHTML = '<em>검색 결과가 없습니다.</em>';
+          }
+        } catch (err) {
+          console.error(err);
+          box.innerHTML = '<em class="text-red-500">연결 오류</em>';
+        }
+      }
+
+      // 이벤트
+      btn.addEventListener('click', () => render());
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') render(); });
+
+      // 페이지 진입 시 키움 전체 자동 로드
+      render('키움');
+    })();
+  </script>
+</body>
 </html>
